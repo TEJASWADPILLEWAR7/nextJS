@@ -12,14 +12,11 @@ export async function POST(request: NextRequest) {
 
     const user = await User.findOne({
       verifyToken: token,
-      veirfyTokenExpiry: { $gt: Date.now() },
+      verifyTokenExpiry: { $gt: Date.now() + 60 * 60 * 1000 },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Invalid or expired token" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid token" }, { status: 400 });
     }
     console.log(user);
 
@@ -29,9 +26,8 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     return NextResponse.json({
-      message: "User verified successfully",
-      user: user,
-      sucess: true,
+      message: "Email verified successfully",
+      success: true,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
